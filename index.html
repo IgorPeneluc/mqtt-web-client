@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo MQTT com Paho</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="paho-mqtt.js"></script>
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const broker = 'broker.emqx.io';
+            const port = 8084;
+            const topic = 'wokwi-weather';
+
+            const client = new Paho.MQTT.Client(broker, port, 'web_' + parseInt(Math.random() * 100, 10));
+
+            client.onConnectionLost = onConnectionLost;
+            client.onMessageArrived = onMessageArrived;
+
+            client.connect({
+                onSuccess: onConnect,
+                onFailure: onFailure,
+                useSSL: true,
+            });
+
+            function onConnect() {
+                console.log('Conectado ao broker MQTT!');
+                client.subscribe(topic);
+            }
+
+            function onFailure(message) {
+                console.log('Falha na conexão: ' + message.errorMessage);
+            }
+
+            function onConnectionLost(responseObject) {
+                if (responseObject.errorCode !== 0) {
+                    console.log('Conexão perdida: ' + responseObject.errorMessage);
+                }
+            }
+
+         function onMessageArrived(message) {
+            console.log('Mensagem recebida: ' + message.payloadString);
+            // Exibe a mensagem recebida em um elemento da página
+            displayMessage(message.payloadString);
+        }
+
+        function displayMessage(message) {
+            const messageElement = document.getElementById('receivedMessage');
+            messageElement.textContent = 'Mensagem recebida: ' + message;
+        }
+    });
+    </script>
+</head>
+<body>
+    <h1>Recebendo Mensagens MQTT</h1>
+    <p id="receivedMessage"></p>
+</body>
+</html>
+
