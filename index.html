@@ -11,7 +11,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const broker = 'broker.emqx.io';
-            const port = 8084;
+            const port = 1883;
             const topic = 'wokwi-weather';
 
             const client = new Paho.MQTT.Client(broker, port, 'web_' + parseInt(Math.random() * 100, 10));
